@@ -10,5 +10,7 @@ deploy:
     secure: kN7Rjau+B7ydTo3L87Fg+2WSWIWVt0OEsllnmVwBBcD7g9mImkTXl5hmlHIaLe++MZ0f1Lj1x/m1Hr184E+fImvFtKGBZKR4FVEPVsJOX03BRTllXWnMQGEFLhmFJPa3sfxJ/x6qx1jwu0ib5B6jesgrguDMWOKN9X/jFYpLcQMM0JRmCf3/bf78DeMFabrZWCdRyByOCUj+0WU7cidUttVgNgjvaPa3kC6ZfmlC027PS3kAKuCYnIljAsMoKHkIgd4A8fnsTkeOjMJZxeIDaJxLCrhRDR1jxm9O6gicI7V3oVVhziudWPuchZlbx6/ENiAJRoZkMwZuAo6UIjSB39HC6V0nwRDnjANJzhGKXihQfpJk0acNqtCvUthZmwGTkHejSGOohIt2k9vgIhHqhENN+d7HzIz9L3yWrNBjzlee7Hq3t0czUcjG53b8v1VZeyJHxyOr8MHM648IK2QlfCErDwYrLXnhnFerYvrIV2dQtYjPtEMfM+UfNZaSgJ7/WIQ9YKqP8L/yHJVG/ThtFyuwE+CwElOGqHFbkuGMeVJKILJOGSjxCs66GsXUsV8VsrxTzHZDKBvD1nSyxz/Pm0JXKtF9qpk4nEP+maIayoSYsn3VNGb+2AKSptLnvm0m+VZXszjMkVRbYoft+x101gfJG1upPuw4uwVg8rg/qag=
   file_glob: true
   file: build/*
+  skip_cleanup: true
   on:
     repo: NoUseFreak/wait-for-it
+    tags: true
