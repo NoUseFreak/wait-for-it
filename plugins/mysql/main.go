@@ -3,18 +3,14 @@ package main
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"../../plugin"
 	"database/sql"
 	"os"
-	"strings"
 	"time"
 )
 
 func main() {
-	parameters := map[string]string{}
-	for _, pair := range strings.Split(os.Args[1], ",") {
-		pair := strings.Split(pair, "=")
-		parameters[pair[0]] = pair[1]
-	}
+	parameters := plugin.ParseArguments()
 
 	dsn := fmt.Sprintf(
 		"%s:%s@%s/%s",
