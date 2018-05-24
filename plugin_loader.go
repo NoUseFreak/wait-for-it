@@ -43,7 +43,11 @@ func (pl *PluginLoader) LoadAll(configs []ServiceConfig) {
 	}
 
 	for name, _ := range plugins {
-		pl.LoadPlugin(name)
+		err := pl.LoadPlugin(name)
+		if err != nil {
+			cliUi.Error("Failed to load " + name)
+			os.Exit(1)
+		}
 	}
 }
 
@@ -52,7 +56,7 @@ func (pl *PluginLoader) LoadPlugin(name string) error {
 	if _, err := os.Stat(targetPath); os.IsNotExist(err) {
 		cliUi.Output(fmt.Sprintf(" - Downloading plugin for %s...", name))
 		pluginUrl, _ := pl.findPluginUrl(name)
-		pl.downloadPlugin(pluginUrl, name)
+		return pl.downloadPlugin(pluginUrl, name)
 	} else {
 		cliUi.Output(fmt.Sprintf(" - Downloading plugin for %s... (cached)", name))
 	}
@@ -92,28 +96,39 @@ func (pl *PluginLoader) findLatestReleasePath() (string, error) {
 	return pl.latestReleasePath, nil
 }
 
-func (pl *PluginLoader) downloadPlugin(url string, name string) {
+func (pl *PluginLoader) downloadPlugin(url string, name string) error {
 	target := pl.location + "/" + name
 	output, err := os.Create(target)
 	if err != nil {
 		fmt.Println("Error while creating", target, "-", err)
-		return
+		return err
 	}
 	defer output.Close()
 
 	response, err := http.Get(url)
 	if err != nil {
 		fmt.Println("Error while downloading", url, "-", err)
-		return
+		os.Remove(target)
+		return err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		fmt.Println("Error while downloading", url, "-", err)
+		os.Remove(target)
+		os.Exit(1)
+	}
 
 	_, err = io.Copy(output, response.Body)
 	if err != nil {
 		fmt.Println("Error while downloading", url, "-", err)
-		return
+		os.Remove(target)
+		os.Exit(1)
+		return err
 	}
 	os.Chmod(target, 0755)
+
+	return nil
 }
 func (pl *PluginLoader) CleanUp() error {
 	return os.RemoveAll(pl.location)
