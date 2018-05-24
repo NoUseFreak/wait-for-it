@@ -33,6 +33,7 @@ func RunAction(c *cli.Context) error {
 	config, _ := NewConfig(c.String("config-file"))
 
 	pluginLoader, _ := NewPluginLoader(wfiDir + "/plugins")
+	//pluginLoader.CleanUp()
 	pluginLoader.LoadAll(config.Services)
 
 	pluginRunner, _ := NewPluginRunner(wfiDir + "/plugins")
