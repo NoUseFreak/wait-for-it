@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../../plugin"
+	"github.com/NoUseFreak/wait-for-it/plugin"
 	"github.com/go-redis/redis"
 	"os"
 	"time"

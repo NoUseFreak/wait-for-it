@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"../../plugin"
+	"github.com/NoUseFreak/wait-for-it/plugin"
 	"database/sql"
 	"os"
 	"time"
