@@ -23,7 +23,6 @@ func NewPluginLoader(location string) (PluginLoader, error) {
 	pluginLoader := PluginLoader{
 		location: location,
 	}
-	pluginLoader.ensureDirectory()
 
 	return pluginLoader, nil
 }
@@ -36,6 +35,7 @@ func (pl *PluginLoader) ensureDirectory() {
 
 func (pl *PluginLoader) LoadAll(configs []ServiceConfig) {
 	cliUi.Title("Initializing plugins...")
+	pl.ensureDirectory()
 
 	plugins := map[string]int{}
 	for _, service := range configs {

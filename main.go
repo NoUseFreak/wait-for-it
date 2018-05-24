@@ -18,6 +18,10 @@ func main() {
 			Value: "./wait-for-it.yml",
 			Usage: "location of the config file",
 		},
+		cli.BoolFlag{
+			Name:  "no-cache",
+			Usage: "toggle to disable cache",
+		},
 	}
 
 	app.Action = RunAction
@@ -33,6 +37,9 @@ func RunAction(c *cli.Context) error {
 	config, _ := NewConfig(c.String("config-file"))
 
 	pluginLoader, _ := NewPluginLoader(wfiDir + "/plugins")
+	if c.Bool("no-cache") {
+		pluginLoader.CleanUp()
+	}
 	pluginLoader.LoadAll(config.Services)
 
 	pluginRunner, _ := NewPluginRunner(wfiDir + "/plugins")
@@ -43,7 +50,6 @@ func RunAction(c *cli.Context) error {
 	cliUi.Output(fmt.Sprintf("Completed %d/%d", completed, completedLen))
 	cliUi.Output(fmt.Sprintf("Failed    %d/%d\n", completed, completedLen))
 
-	pluginLoader.CleanUp()
 
 	if completed == completedLen {
 		os.Exit(0)
