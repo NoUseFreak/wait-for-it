@@ -11,6 +11,11 @@ var cliUi = new(CliUi)
 
 func main() {
 	app := cli.NewApp()
+	app.Name = "wait-for-it"
+	app.Usage = "Wait for services to allow connections"
+	app.HideVersion = true
+	app.Copyright = "(c) Dries De Peuter <dries@depeuter.io>"
+	app.EnableBashCompletion = true
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -37,10 +42,7 @@ func RunAction(c *cli.Context) error {
 	config, _ := NewConfig(c.String("config-file"))
 
 	pluginLoader, _ := NewPluginLoader(wfiDir + "/plugins")
-	if c.Bool("no-cache") {
-		pluginLoader.CleanUp()
-	}
-	pluginLoader.LoadAll(config.Services)
+	pluginLoader.LoadAll(config.Services, c.Bool("no-cache"))
 
 	pluginRunner, _ := NewPluginRunner(wfiDir + "/plugins")
 	completed := pluginRunner.RunAll(config.Services)

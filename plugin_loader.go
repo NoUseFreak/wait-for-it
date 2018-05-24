@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"sync"
 )
 
 type PluginLoader struct {
@@ -33,8 +34,11 @@ func (pl *PluginLoader) ensureDirectory() {
 	}
 }
 
-func (pl *PluginLoader) LoadAll(configs []ServiceConfig) {
+func (pl *PluginLoader) LoadAll(configs []ServiceConfig, noCache bool) {
 	cliUi.Title("Initializing plugins...")
+	if noCache {
+		pl.CleanUp()
+	}
 	pl.ensureDirectory()
 
 	plugins := map[string]int{}
@@ -42,13 +46,20 @@ func (pl *PluginLoader) LoadAll(configs []ServiceConfig) {
 		plugins[service.Type]++
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(len(plugins))
 	for name, _ := range plugins {
-		err := pl.LoadPlugin(name)
-		if err != nil {
-			cliUi.Error("Failed to load " + name)
-			os.Exit(1)
-		}
+		go func(name string) {
+			defer wg.Done()
+			err := pl.LoadPlugin(name)
+			if err != nil {
+				cliUi.Error("Failed to load " + name)
+				os.Exit(1)
+			}
+		}(name)
 	}
+
+	wg.Wait()
 }
 
 func (pl *PluginLoader) LoadPlugin(name string) error {
