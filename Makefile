@@ -21,21 +21,24 @@ run:
 	go run *.go
 
 .PHONY: darwin
-darwin: build/darwin_wait-for-it build/darwin_mysql
+darwin: build/darwin_wait-for-it build/darwin_mysql build/darwin_redis
 
 .PHONY: linux
-darwin: build/linux_wait-for-it build/linux_mysql
+darwin: build/linux_wait-for-it build/linux_mysql build/linux_redis
 
 build/darwin_wait-for-it:
 	$(call build,.,darwin,amd64,wait-for-it)
-
 build/linux_wait-for-it:
 	$(call build,.,linux,amd64,wait-for-it)
 
 
 build/darwin_mysql:
 	$(call build_plugin,darwin,amd64,mysql)
-
 build/linux_mysql:
 	$(call build_plugin,linux,amd64,mysql)
+
+build/darwin_redis:
+	$(call build_plugin,darwin,amd64,redis)
+build/linux_redis:
+	$(call build_plugin,linux,amd64,redis)
 

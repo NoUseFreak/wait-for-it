@@ -33,7 +33,6 @@ func RunAction(c *cli.Context) error {
 	config, _ := NewConfig(c.String("config-file"))
 
 	pluginLoader, _ := NewPluginLoader(wfiDir + "/plugins")
-	//pluginLoader.CleanUp()
 	pluginLoader.LoadAll(config.Services)
 
 	pluginRunner, _ := NewPluginRunner(wfiDir + "/plugins")
@@ -44,7 +43,7 @@ func RunAction(c *cli.Context) error {
 	cliUi.Output(fmt.Sprintf("Completed %d/%d", completed, completedLen))
 	cliUi.Output(fmt.Sprintf("Failed    %d/%d\n", completed, completedLen))
 
-	//pluginLoader.CleanUp()
+	pluginLoader.CleanUp()
 
 	if completed == completedLen {
 		os.Exit(0)

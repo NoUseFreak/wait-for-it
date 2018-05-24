@@ -16,3 +16,9 @@ services:
     port: 3306
     username: roots
     password: root
+  redis_check:
+    type: redis
+    timeout: 5
+    host: localhost
+    port: 6379
+    password: ""
