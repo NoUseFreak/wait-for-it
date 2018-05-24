@@ -1,14 +1,34 @@
 package main
 
 import (
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
-	"gopkg.in/yaml.v2"
+	"time"
+	"strconv"
 )
 
 type Config struct {
+	DefaultTimeout time.Duration
+	Services       []ServiceConfig
+}
 
-	Services []ServiceConfig
+func NewConfig(path string) (Config, error) {
+	config := Config{}
+
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	config.SetDefaults()
+	config.ParseConfig(content)
+
+	return config, nil
+}
+
+func (c *Config) SetDefaults() {
+	c.DefaultTimeout = 30 * time.Second
 }
 
 func (c *Config) ParseConfig(content []byte) error {
@@ -20,32 +40,36 @@ func (c *Config) ParseConfig(content []byte) error {
 		log.Fatal("no services set")
 	}
 
-	for name, value := range(m["services"]) {
-		c.Services = append(c.Services, ServiceConfig{
-			Name: name,
-			Type: value["type"],
-			Settings:value,
-		})
+	for name, value := range m["services"] {
+		sc, _ := NewServiceConfig(name, value, *c)
+		c.Services = append(c.Services, sc)
 	}
 
 	return err
 }
 
-func NewConfig(path string) (Config, error) {
-	config := Config{}
-
-	content, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	config.ParseConfig(content)
-
-	return config, nil
+type ServiceConfig struct {
+	Name     string
+	Type     string
+	Timeout  time.Duration
+	Settings map[string]string
 }
 
-type ServiceConfig struct {
-	Name string
-	Type string
-	Settings map[string]string
+func NewServiceConfig(name string, settings map[string]string, defaults Config) (ServiceConfig, error) {
+	sc := ServiceConfig{
+		Name:     name,
+		Type:     settings["type"],
+		Timeout:  defaults.DefaultTimeout,
+		Settings: settings,
+	}
+
+	if val, ok := settings["timeout"]; ok {
+		valInt, _ := strconv.Atoi(val)
+		sc.Timeout = time.Duration(valInt) * time.Second
+	}
+
+	delete(sc.Settings, "type")
+	delete(sc.Settings, "timeout")
+
+	return sc, nil
 }

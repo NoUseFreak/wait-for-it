@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os"
 	"fmt"
+	"os"
 )
 
 type PluginLoader struct {
@@ -11,13 +11,12 @@ type PluginLoader struct {
 
 func NewPluginLoader(location string) (PluginLoader, error) {
 	pluginLoader := PluginLoader{
-		location:location,
+		location: location,
 	}
 	pluginLoader.ensureDirectory()
 
 	return pluginLoader, nil
 }
-
 
 func (pl *PluginLoader) ensureDirectory() {
 	if _, err := os.Stat(pl.location); os.IsNotExist(err) {
@@ -33,7 +32,7 @@ func (pl *PluginLoader) LoadAll(configs []ServiceConfig) {
 }
 
 func (pl *PluginLoader) LoadPlugin(name string) error {
-	path := pl.location+"/"+name
+	path := pl.location + "/" + name
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		cliUi.Output(fmt.Sprintf(" - Downloading plugin for %s...", name))
 	} else {

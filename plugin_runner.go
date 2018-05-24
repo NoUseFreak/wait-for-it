@@ -1,12 +1,13 @@
 package main
 
 import (
-	"sync"
-	"fmt"
-	"os/exec"
 	"bufio"
+	"fmt"
+	"io"
+	"os/exec"
+	"sync"
 	"time"
-	"syscall"
+	"strings"
 )
 
 type PluginRunner struct {
@@ -15,18 +16,23 @@ type PluginRunner struct {
 
 func NewPluginRunner(location string) (PluginRunner, error) {
 	pluginRunner := PluginRunner{
-		location:location,
+		location: location,
 	}
 
 	return pluginRunner, nil
 }
 
-func (pr *PluginRunner) RunAll(configs []ServiceConfig) {
+func (pr *PluginRunner) RunAll(configs []ServiceConfig) int {
 	cliUi.Title("Testing services...")
 	var wg sync.WaitGroup
 	responses := make(chan bool)
 	stdout := make(chan string)
 	stderr := make(chan string)
+
+	for _, service := range configs {
+		cliUi.Output(fmt.Sprintf(" - Running %s (%s)", service.Name, service.Type))
+	}
+	cliUi.Output("")
 
 	for _, service := range configs {
 		wg.Add(1)
@@ -38,66 +44,88 @@ func (pr *PluginRunner) RunAll(configs []ServiceConfig) {
 		}(service)
 	}
 
-
 	go func() {
 		for logLine := range stdout {
-			cliUi.Output(logLine)
+			if logLine != "" {
+				cliUi.Output(logLine)
+			}
 		}
 	}()
 	go func() {
 		for logLine := range stderr {
-			cliUi.Error(logLine)
+			if logLine != "" {
+				cliUi.Error(logLine)
+			}
 		}
 	}()
+	completed := 0
 	go func() {
+		var b2i = map[bool]int{false: 0, true: 1}
 		for response := range responses {
-			fmt.Println(response)
+			completed += b2i[response]
 		}
 	}()
 
 	wg.Wait()
+
+	return completed
 }
 
 func (pr *PluginRunner) Run(config ServiceConfig, stdout chan string, stderr chan string) bool {
-	cliUi.Output(fmt.Sprintf(" - Running %s (%s) with %v ", config.Name, config.Type, config.Settings))
-	cmd := exec.Command(pr.location+"/"+config.Type)
+	argString := pr.createArguments(config)
+	cmd := exec.Command(pr.location + "/" + config.Type, argString)
 
-	stderrPipe, _ := cmd.StderrPipe()
 	stdoutPipe, _ := cmd.StdoutPipe()
+	pr.forwardOutput(config, stdoutPipe, stdout)
+	stderrPipe, _ := cmd.StderrPipe()
+	pr.forwardOutput(config, stderrPipe, stderr)
 
-	timer := time.AfterFunc(1 * time.Second, func() {
-		cmd.Process.Kill()
-		stderr <- "Process timeout"
-	})
+	timer := pr.setTimeoutTimer(config, cmd, stderr)
 
 	if err := cmd.Start(); err != nil {
 		stderr <- err.Error()
 		return false
 	}
 
-	stderrScanner := bufio.NewScanner(stderrPipe)
-	go func() {
-		for stderrScanner.Scan() {
-			stderr <- fmt.Sprintf("  %s:%s", config.Name, stderrScanner.Text())
-		}
-	}()
-
-	stdoutScanner := bufio.NewScanner(stdoutPipe)
-	go func() {
-		for stdoutScanner.Scan() {
-			stdout <- fmt.Sprintf("  %s:%s", config.Name, stdoutScanner.Text())
-		}
-	}()
-
 	err := cmd.Wait()
-	if err != nil {
-		if exiterr, ok := err.(*exec.ExitError); ok {
-			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
-				stderr <- fmt.Sprintf("Exit Status: %d", status.ExitStatus())
-			}
-		}
-	}
+	pr.handleResult(err, config, stdout, stderr)
 	timer.Stop()
 
-	return err == nil;
+	// force all output to render
+	stdout <- ""
+	stderr <- ""
+
+	return err == nil
+}
+func (pr *PluginRunner) handleResult(err error, config ServiceConfig, stdout chan string, stderr chan string) {
+	if err == nil {
+		stdout <- fmt.Sprintf("%s: Connected", config.Name)
+	} else {
+		stderr <- fmt.Sprintf("%s: Failed to connect", config.Name)
+	}
+}
+
+func (pr *PluginRunner) forwardOutput(config ServiceConfig, input io.ReadCloser, output chan string) {
+	scanner := bufio.NewScanner(input)
+	go func() {
+		for scanner.Scan() {
+			output <- fmt.Sprintf("%s: %s", config.Name, scanner.Text())
+		}
+	}()
+}
+
+func (pr *PluginRunner) setTimeoutTimer(config ServiceConfig, cmd *exec.Cmd, stderr chan string) *time.Timer {
+	return time.AfterFunc(config.Timeout, func() {
+		cmd.Process.Kill()
+	})
+}
+
+func (pr *PluginRunner) createArguments(config ServiceConfig) string {
+	vsm := []string{}
+	for i, v := range config.Settings {
+		if i != "" {
+			vsm = append(vsm, fmt.Sprintf("%s=%s", i, v))
+		}
+	}
+	return strings.Join(vsm, ",")
 }

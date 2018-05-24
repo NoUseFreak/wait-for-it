@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"fmt"
 	"github.com/urfave/cli"
 )
 
@@ -11,9 +12,9 @@ var cliUi = new(CliUi)
 func main() {
 	app := cli.NewApp()
 
-	app.Flags = []cli.Flag {
+	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name: "config-file, f",
+			Name:  "config-file, f",
 			Value: "./wait-for-it.yml",
 			Usage: "location of the config file",
 		},
@@ -31,13 +32,14 @@ func RunAction(c *cli.Context) error {
 	wfiDir := "./.wait-for-it"
 	config, _ := NewConfig(c.String("config-file"))
 
-	pluginLoader, _ := NewPluginLoader(wfiDir+"/plugins")
+	pluginLoader, _ := NewPluginLoader(wfiDir + "/plugins")
 	pluginLoader.LoadAll(config.Services)
 
-	pluginRunner, _ := NewPluginRunner(wfiDir+"/plugins")
-	pluginRunner.RunAll(config.Services)
+	pluginRunner, _ := NewPluginRunner(wfiDir + "/plugins")
+	completed := pluginRunner.RunAll(config.Services)
 
-
+	cliUi.Title("Report")
+	cliUi.Output(fmt.Sprintf("[green]Completed %d checks", completed))
 
 	//pluginLoader.CleanUp()
 

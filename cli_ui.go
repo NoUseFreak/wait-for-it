@@ -1,20 +1,20 @@
 package main
 
 import (
-	"github.com/mitchellh/colorstring"
 	"fmt"
+	"github.com/mitchellh/colorstring"
+	"strings"
 )
 
 type CliUi struct {
 }
-
 
 func (u CliUi) Output(msg string) {
 	colorstring.Println(msg)
 }
 
 func (u CliUi) Title(msg string) {
-	colorstring.Println(fmt.Sprintf("\n[bold][blue]%s", msg))
+	colorstring.Println(fmt.Sprintf("\n[bold][blue]%s\n%s", msg, strings.Repeat("-", len(msg))))
 }
 
 func (u CliUi) Info(msg string) {
