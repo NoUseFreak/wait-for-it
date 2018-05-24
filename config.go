@@ -4,8 +4,8 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
-	"time"
 	"strconv"
+	"time"
 )
 
 type Config struct {

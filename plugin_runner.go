@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"strings"
 	"sync"
 	"time"
-	"strings"
 )
 
 type PluginRunner struct {
@@ -73,7 +73,7 @@ func (pr *PluginRunner) RunAll(configs []ServiceConfig) int {
 
 func (pr *PluginRunner) Run(config ServiceConfig, stdout chan string, stderr chan string) bool {
 	argString := pr.createArguments(config)
-	cmd := exec.Command(pr.location + "/" + config.Type, argString)
+	cmd := exec.Command(pr.location+"/"+config.Type, argString)
 
 	stdoutPipe, _ := cmd.StdoutPipe()
 	pr.forwardOutput(config, stdoutPipe, stdout)

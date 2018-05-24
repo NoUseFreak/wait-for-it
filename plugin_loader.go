@@ -1,21 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"net/http"
-	"time"
 	"encoding/json"
+	"fmt"
 	"github.com/jmoiron/jsonq"
-	"path"
 	"io"
+	"net/http"
 	"net/url"
-	"strings"
+	"os"
+	"path"
 	"runtime"
+	"strings"
+	"time"
 )
 
 type PluginLoader struct {
-	location string
+	location          string
 	latestReleasePath string
 }
 
