@@ -1,6 +1,6 @@
 
 .PHONY: all
-all: build build/mysql
+all: build build/mysql build/wait-for-it
 	@ls -lh build
 
 .PHONY: clean
@@ -15,6 +15,9 @@ copy:
 .PHONY: run
 run:
 	go run *.go
+
+build/wait-for-it:
+	go get; go build; mv wait-for-it build/
 
 build/mysql:
 	@cd plugins/mysql; go get; go build; mv mysql ../../build/mysql

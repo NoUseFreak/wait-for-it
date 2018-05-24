@@ -37,11 +37,19 @@ func RunAction(c *cli.Context) error {
 
 	pluginRunner, _ := NewPluginRunner(wfiDir + "/plugins")
 	completed := pluginRunner.RunAll(config.Services)
+	completedLen := len(config.Services)
 
 	cliUi.Title("Report")
-	cliUi.Output(fmt.Sprintf("[green]Completed %d checks", completed))
+	cliUi.Output(fmt.Sprintf("Completed %d/%d", completed, completedLen))
+	cliUi.Output(fmt.Sprintf("Failed    %d/%d\n", completed, completedLen))
 
 	//pluginLoader.CleanUp()
+
+	if completed == completedLen {
+		os.Exit(0)
+	} else {
+		os.Exit(1)
+	}
 
 	return nil
 }
