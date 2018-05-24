@@ -11,6 +11,7 @@ import (
 	"io"
 	"net/url"
 	"strings"
+	"runtime"
 )
 
 type PluginLoader struct {
@@ -37,12 +38,9 @@ func (pl *PluginLoader) LoadAll(configs []ServiceConfig) {
 	cliUi.Title("Initializing plugins...")
 
 	plugins := map[string]int{}
-
 	for _, service := range configs {
 		plugins[service.Type]++
 	}
-
-	fmt.Println(plugins)
 
 	for name, _ := range plugins {
 		pl.LoadPlugin(name)
@@ -64,7 +62,7 @@ func (pl *PluginLoader) LoadPlugin(name string) error {
 func (pl *PluginLoader) findPluginUrl(name string) (string, error) {
 	url, _ := pl.findLatestReleasePath()
 
-	return url + "/" + name, nil
+	return url + "/" + runtime.GOOS + "_" + name, nil
 }
 
 func (pl *PluginLoader) findLatestReleasePath() (string, error) {
@@ -110,14 +108,12 @@ func (pl *PluginLoader) downloadPlugin(url string, name string) {
 	}
 	defer response.Body.Close()
 
-	n, err := io.Copy(output, response.Body)
+	_, err = io.Copy(output, response.Body)
 	if err != nil {
 		fmt.Println("Error while downloading", url, "-", err)
 		return
 	}
 	os.Chmod(target, 0755)
-
-	fmt.Println(n, "bytes downloaded.")
 }
 func (pl *PluginLoader) CleanUp() error {
 	return os.RemoveAll(pl.location)
