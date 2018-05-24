@@ -1,6 +1,6 @@
 
-build = cd $(1); GOOS=$(2) GOARCH=$(3) go build -ldflags=-s -o build/$(2)_$(4)
-build_plugin = cd plugins/$(3); GOOS=$(1) GOARCH=$(2) go build -ldflags=-s -o ../../build/$(1)_$(3)
+build = cd $(1); go get; GOOS=$(2) GOARCH=$(3) go build -ldflags=-s -o build/$(2)_$(4)
+build_plugin = cd plugins/$(3); go get; GOOS=$(1) GOARCH=$(2) go build -ldflags=-s -o ../../build/$(1)_$(3)
 
 
 .PHONY: all
