@@ -50,7 +50,7 @@ func RunAction(c *cli.Context) error {
 
 	cliUi.Title("Report")
 	cliUi.Output(fmt.Sprintf("Completed %d/%d", completed, completedLen))
-	cliUi.Output(fmt.Sprintf("Failed    %d/%d\n", completed, completedLen))
+	cliUi.Output(fmt.Sprintf("Failed    %d/%d\n", completedLen-completed, completedLen))
 
 	if completed == completedLen {
 		os.Exit(0)
