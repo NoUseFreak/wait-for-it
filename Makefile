@@ -22,6 +22,7 @@ test:
 
 .PHONY: run
 run:
+	go get
 	go run *.go
 
 .PHONY: darwin
