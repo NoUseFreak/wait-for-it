@@ -3,9 +3,9 @@ package main
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 type Config struct {
@@ -18,7 +18,7 @@ func NewConfig(path string) (Config, error) {
 
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Fatal(err)
+		return config, err
 	}
 
 	config.SetDefaults()
@@ -37,7 +37,7 @@ func (c *Config) ParseConfig(content []byte) error {
 	err := yaml.Unmarshal(content, &m)
 
 	if _, ok := m["services"]; !ok {
-		log.Fatal("no services set")
+		return fmt.Errorf("no service found")
 	}
 
 	for name, value := range m["services"] {
