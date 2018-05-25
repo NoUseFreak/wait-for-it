@@ -4,7 +4,7 @@ build_plugin = cd plugins/$(3); go get; GOOS=$(1) GOARCH=$(2) go build -ldflags=
 
 
 .PHONY: all
-all: darwin linux
+all: test darwin linux
 	@ls -lh build
 
 .PHONY: clean
@@ -15,6 +15,10 @@ clean:
 copy:
 	mkdir -p .wait-for-it/plugins
 	cp build/* .wait-for-it/plugins/
+
+.PHONY: test
+test:
+	go test
 
 .PHONY: run
 run:
