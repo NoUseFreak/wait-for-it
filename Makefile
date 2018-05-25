@@ -18,11 +18,11 @@ copy:
 
 .PHONY: test
 test:
+	go get
 	go test
 
 .PHONY: run
 run:
-	go get
 	go run *.go
 
 .PHONY: darwin
