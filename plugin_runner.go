@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"github.com/NoUseFreak/wait-for-it/plugin"
 )
 
 type PluginRunner struct {
@@ -127,5 +128,5 @@ func (pr *PluginRunner) createArguments(config ServiceConfig) string {
 			vsm = append(vsm, fmt.Sprintf("%s=%s", i, v))
 		}
 	}
-	return strings.Join(vsm, ",")
+	return strings.Join(vsm, plugin.ARG_SEPERATOR)
 }
