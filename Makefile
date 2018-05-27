@@ -18,9 +18,9 @@ copy:
 
 .PHONY: test
 test:
-	go get
-	go get github.com/stretchr/testify/assert
-	go test
+	go get; \
+		go get github.com/stretchr/testify/assert; \
+		go test
 
 .PHONY: run
 run:
