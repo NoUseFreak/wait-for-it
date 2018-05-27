@@ -24,7 +24,7 @@ test:
 
 .PHONY: run
 run:
-	go run *.go
+	go run `ls -1 *.go | grep -v _test.go`
 
 .PHONY: darwin
 darwin: build/darwin_wait-for-it build/darwin_mysql build/darwin_redis
