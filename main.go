@@ -58,7 +58,7 @@ func RunAction(c *cli.Context) error {
 	total := len(config.Services)
 
 	cliUi.Title("Report")
-	cliUi.Output(fmt.Sprintf("Completed %d/%d\n", completed, total))
+	cliUi.Output(fmt.Sprintf("Completed %d/%d", completed, total))
 	cliUi.Output(fmt.Sprintf("Failed    %d/%d\n", total - completed, total))
 
 	if completed == total {
