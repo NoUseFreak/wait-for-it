@@ -16,7 +16,7 @@ Create your config file `wait-for-it.yml`.
 ```yaml
 services:
   mysql_check:
-    type: mysql
+    plugin: mysql
     host: localhost
     port: 3306
     username: root

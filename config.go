@@ -33,19 +33,24 @@ func (c *Config) SetDefaults() {
 
 func (c *Config) ParseConfig(content []byte) error {
 
-	m := make(map[string]map[string]map[string]string)
-	err := yaml.Unmarshal(content, &m)
+	m := make(map[string]map[string]map[string]interface{})
+	if err := yaml.Unmarshal(content, &m); err != nil {
+		return err
+	}
 
 	if _, ok := m["services"]; !ok {
 		return fmt.Errorf("no service found")
 	}
 
 	for name, value := range m["services"] {
-		sc, _ := NewServiceConfig(name, value, *c)
+		sc, err := NewServiceConfig(name, value, *c)
+		if err != nil {
+			return err
+		}
 		c.Services = append(c.Services, sc)
 	}
 
-	return err
+	return nil
 }
 
 type ServiceConfig struct {
@@ -55,16 +60,27 @@ type ServiceConfig struct {
 	Settings map[string]string
 }
 
-func NewServiceConfig(name string, settings map[string]string, defaults Config) (ServiceConfig, error) {
-	sc := ServiceConfig{
-		Name:     name,
-		Type:     settings["type"],
-		Timeout:  defaults.DefaultTimeout,
-		Settings: settings,
+func NewServiceConfig(name string, settings map[string]interface{}, defaults Config) (ServiceConfig, error) {
+	sc := ServiceConfig{}
+
+	if _, ok := settings["plugin"]; !ok {
+		return sc, fmt.Errorf("no service found")
+	}
+	if _, ok := settings["parameters"]; !ok {
+		return sc, fmt.Errorf("no service found")
+	}
+
+	sc.Name = name
+	sc.Type = settings["plugin"].(string)
+	sc.Timeout = defaults.DefaultTimeout
+
+	sc.Settings = make(map[string]string)
+	for key, value := range settings["parameters"].(map[interface{}]interface{}) {
+		sc.Settings[key.(string)] = value.(string)
 	}
 
 	if val, ok := settings["timeout"]; ok {
-		valInt, _ := strconv.Atoi(val)
+		valInt, _ := strconv.Atoi(val.(string))
 		sc.Timeout = time.Duration(valInt) * time.Second
 	}
 

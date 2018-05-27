@@ -3,22 +3,27 @@ defaults:
   timeout: 5
 services:
   mysql_check:
-    type: mysql
-    timeout: 10
-    host: localhost
-    port: 3306
-    username: root
-    password: root
+    plugin: mysql
+    timeout: 30
+    delay: 5
+    frequency: 1
+    parameters:
+      host: localhost
+      port: 3306
+      username: root
+      password: root
   mysql_check2:
-    type: mysql
+    plugin: mysql
     timeout: 3
-    host: localhost
-    port: 3306
-    username: roots
-    password: root
+    parameters:
+      host: localhost
+      port: 3306
+      username: roots
+      password: root
   redis_check:
-    type: redis
+    plugin: redis
     timeout: 5
-    host: localhost
-    port: 6379
-    password: ""
+    parameters:
+      host: localhost
+      port: 6379
+      password: ""

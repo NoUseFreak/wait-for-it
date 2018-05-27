@@ -30,6 +30,8 @@ func TestConfig_ParseConfig_Success(t *testing.T) {
 services:
   mysql_check:
     plugin: mysql
+    parameters:
+      host: some_host
 `
 	config := Config{}
 	err := config.ParseConfig([]byte(data))
@@ -51,12 +53,27 @@ random:
 	assert.Empty(t, config.Services)
 }
 
+func TestConfig_ParseConfig_UnknownProperties(t *testing.T) {
+	var data = `
+services:
+  mysql_check:
+    plugin: mysql
+    unknown_property: something
+`
+	config := Config{}
+	err := config.ParseConfig([]byte(data))
+
+	assert.Error(t, err)
+}
+
 func TestNewServiceConfig(t *testing.T) {
 	config := Config{}
-	settings := map[string]string{
+	settings := map[string]interface{}{
 		"timeout": "10",
-		"type": "mysql",
-		"extra": "value",
+		"plugin": "mysql",
+		"parameters": map[interface{}]interface{}{
+			"host": "value",
+		},
 	}
 	serviceConfig, err := NewServiceConfig("name", settings, config)
 
@@ -66,5 +83,5 @@ func TestNewServiceConfig(t *testing.T) {
 	assert.Equal(t, 10 * time.Second, serviceConfig.Timeout)
 	assert.NotContains(t, serviceConfig.Settings, "timeout")
 	assert.NotContains(t, serviceConfig.Settings, "type")
-	assert.Contains(t, serviceConfig.Settings, "extra")
+	assert.Contains(t, serviceConfig.Settings, "host")
 }
