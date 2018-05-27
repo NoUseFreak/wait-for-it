@@ -18,9 +18,10 @@ services:
   mysql_check:
     plugin: mysql
     host: localhost
-    port: 3306
-    username: root
-    password: root
+    parameters:
+      port: 3306
+      username: root
+      password: root
 ```
 
 Now check if the mysql service is available.
