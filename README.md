@@ -31,7 +31,7 @@ services:
 Now check if the mysql service is available.
 
 ```bash
-$ wait-for-it
+wait-for-it
 ```
 
 # Help
