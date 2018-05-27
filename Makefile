@@ -65,3 +65,8 @@ build/darwin_cassandra:
 	$(call build_plugin,darwin,amd64,cassandra)
 build/linux_cassandra:
 	$(call build_plugin,linux,amd64,cassandra)
+
+build/darwin_kafka:
+	$(call build_plugin,darwin,amd64,kafka)
+build/linux_kafka:
+	$(call build_plugin,linux,amd64,kafka)

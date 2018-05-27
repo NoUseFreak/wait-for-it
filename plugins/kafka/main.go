@@ -1,32 +1,33 @@
 package main
 
 import (
-	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/Shopify/sarama"
 	"github.com/NoUseFreak/wait-for-it/plugin"
-	"database/sql"
 	"os"
 	"time"
+	"strings"
 )
 
 func main() {
 	parameters := plugin.ParseArguments()
-
-	dsn := fmt.Sprintf(
-		"%s:%s@%s/%s",
-		parameters["username"],
-		parameters["password"],
-		parameters["hostname"],
-		parameters["database"],
-	)
-
 	for {
-		db, _ := sql.Open("mysql", dsn)
-		defer db.Close()
-		err := db.Ping()
-		if err == nil {
+		success := DoKafkaTest(parameters)
+		if success {
 			os.Exit(0)
 		}
 		time.Sleep(1 * time.Second)
 	}
+}
+
+func DoKafkaTest(parameters map[string]string) bool {
+	defer func() {
+		recover()
+	}()
+	brokers := strings.Split(parameters["brokers"], ",")
+
+	config := sarama.NewConfig()
+	consumer, _ := sarama.NewConsumer(brokers, config)
+	defer consumer.Close()
+
+	return true
 }
