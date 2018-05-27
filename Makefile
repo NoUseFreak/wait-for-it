@@ -36,14 +36,16 @@ darwin: \
 	build/darwin_wait-for-it \
 	build/darwin_mysql \
 	build/darwin_redis \
-	build/darwin_cassandra
+	build/darwin_cassandra \
+	build/darwin_kafka
 
 .PHONY: linux
 darwin: \
 	build/linux_wait-for-it \
 	build/linux_mysql \
 	build/linux_redis \
-	build/linux_cassandra
+	build/linux_cassandra \
+	build/linux_kafka
 
 build/darwin_wait-for-it:
 	$(call build,.,darwin,amd64,wait-for-it)
@@ -65,3 +67,8 @@ build/darwin_cassandra:
 	$(call build_plugin,darwin,amd64,cassandra)
 build/linux_cassandra:
 	$(call build_plugin,linux,amd64,cassandra)
+
+build/darwin_kafka:
+	$(call build_plugin,darwin,amd64,kafka)
+build/linux_kafka:
+	$(call build_plugin,linux,amd64,kafka)

@@ -29,3 +29,7 @@ services:
     plugin: cassandra
     parameters:
       hosts: 127.0.0.1
+  kafka:
+    plugin: kafka
+    parameters:
+      brokers: 127.0.0.1:9092
