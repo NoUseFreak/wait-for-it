@@ -10,3 +10,7 @@ services:
     image: redis
     ports:
       - 6379:6379
+  cassandra:
+    image: cassandra
+    ports:
+      - 9042:9042

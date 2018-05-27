@@ -25,3 +25,7 @@ services:
       host: localhost
       port: 6379
       password: ""
+  cassandra_check:
+    plugin: cassandra
+    parameters:
+      hosts: 127.0.0.1

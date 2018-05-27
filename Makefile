@@ -26,11 +26,24 @@ test:
 run:
 	go run `ls -1 *.go | grep -v _test.go`
 
+.PHONY: install
+install:
+	mv build/`uname`_wait-for-it /usr/local/bin/wait-for-it
+	chmod +x /usr/local/bin/wait-for-it
+
 .PHONY: darwin
-darwin: build/darwin_wait-for-it build/darwin_mysql build/darwin_redis
+darwin: \
+	build/darwin_wait-for-it \
+	build/darwin_mysql \
+	build/darwin_redis \
+	build/darwin_cassandra
 
 .PHONY: linux
-darwin: build/linux_wait-for-it build/linux_mysql build/linux_redis
+darwin: \
+	build/linux_wait-for-it \
+	build/linux_mysql \
+	build/linux_redis \
+	build/linux_cassandra
 
 build/darwin_wait-for-it:
 	$(call build,.,darwin,amd64,wait-for-it)
@@ -48,3 +61,7 @@ build/darwin_redis:
 build/linux_redis:
 	$(call build_plugin,linux,amd64,redis)
 
+build/darwin_cassandra:
+	$(call build_plugin,darwin,amd64,cassandra)
+build/linux_cassandra:
+	$(call build_plugin,linux,amd64,cassandra)
