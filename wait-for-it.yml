@@ -1,6 +1,4 @@
 ---
-defaults:
-  timeout: 5
 services:
   mysql_check:
     plugin: mysql

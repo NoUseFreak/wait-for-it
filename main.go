@@ -27,6 +27,10 @@ func main() {
 			Name:  "no-cache",
 			Usage: "toggle to disable cache",
 		},
+		cli.BoolFlag{
+			Name:  "quite, q",
+			Usage: "toggle to disable output",
+		},
 	}
 
 	app.Action = RunAction
@@ -39,7 +43,12 @@ func main() {
 
 func RunAction(c *cli.Context) error {
 	wfiDir := "./.wait-for-it"
-	config, _ := NewConfig(c.String("config-file"))
+	cliUi.Quite = c.Bool("quite")
+
+	config, err := NewConfig(c.String("config-file"))
+	if err != nil {
+		cliUi.Error(err.Error())
+	}
 
 	pluginLoader, _ := NewPluginLoader(wfiDir + "/plugins")
 	pluginLoader.LoadAll(config.Services, c.Bool("no-cache"))

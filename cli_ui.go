@@ -7,22 +7,31 @@ import (
 )
 
 type CliUi struct {
+	Quite bool
 }
 
 func (u CliUi) Output(msg string) {
-	colorstring.Println(msg)
+	if !u.Quite {
+		colorstring.Println(msg)
+	}
 }
 
 func (u CliUi) Title(msg string) {
-	colorstring.Println(fmt.Sprintf("\n[bold][blue]%s\n%s", msg, strings.Repeat("-", len(msg))))
+	if !u.Quite {
+		colorstring.Println(fmt.Sprintf("\n[bold][blue]%s\n%s", msg, strings.Repeat("-", len(msg))))
+	}
 }
 
 func (u CliUi) Info(msg string) {
-	colorstring.Println(fmt.Sprintf("[green]%s", msg))
+	if !u.Quite {
+		colorstring.Println(fmt.Sprintf("[green]%s", msg))
+	}
 }
 
 func (u CliUi) Warn(msg string) {
-	colorstring.Println(fmt.Sprintf("[blue]%s", msg))
+	if !u.Quite {
+		colorstring.Println(fmt.Sprintf("[blue]%s", msg))
+	}
 }
 
 func (u CliUi) Error(msg string) {

@@ -22,7 +22,9 @@ func NewConfig(path string) (Config, error) {
 	}
 
 	config.SetDefaults()
-	config.ParseConfig(content)
+	if err := config.ParseConfig(content); err != nil {
+		return config, err
+	}
 
 	return config, nil
 }
@@ -76,12 +78,19 @@ func NewServiceConfig(name string, settings map[string]interface{}, defaults Con
 
 	sc.Settings = make(map[string]string)
 	for key, value := range settings["parameters"].(map[interface{}]interface{}) {
-		sc.Settings[key.(string)] = value.(string)
+		switch t := value.(type) {
+		case string:
+			sc.Settings[key.(string)] = value.(string)
+		case int:
+			sc.Settings[key.(string)] = strconv.Itoa(value.(int))
+		default:
+			return sc, fmt.Errorf("Can't handle value of type %T", t)
+		}
+
 	}
 
 	if val, ok := settings["timeout"]; ok {
-		valInt, _ := strconv.Atoi(val.(string))
-		sc.Timeout = time.Duration(valInt) * time.Second
+		sc.Timeout = time.Duration(val.(int)) * time.Second
 	}
 
 	delete(sc.Settings, "type")
