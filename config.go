@@ -86,11 +86,19 @@ func NewServiceConfig(name string, settings map[string]interface{}, defaults Con
 		default:
 			return sc, fmt.Errorf("Can't handle value of type %T", t)
 		}
-
 	}
 
 	if val, ok := settings["timeout"]; ok {
-		sc.Timeout = time.Duration(val.(int)) * time.Second
+		switch t := val.(type) {
+		case string:
+			intVal, _ := strconv.Atoi(val.(string))
+			sc.Timeout = time.Duration(intVal) * time.Second
+		case int:
+			sc.Timeout = time.Duration(val.(int)) * time.Second
+		default:
+			return sc, fmt.Errorf("Unknown type for timeout %T", t)
+		}
+
 	}
 
 	delete(sc.Settings, "type")
