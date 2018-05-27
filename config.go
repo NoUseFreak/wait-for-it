@@ -74,7 +74,7 @@ func NewServiceConfig(name string, settings map[string]interface{}, defaults Con
 
 	sc.Name = name
 	sc.Type = settings["plugin"].(string)
-	sc.Timeout = defaults.DefaultTimeout
+	delete(sc.Settings, "plugin")
 
 	sc.Settings = make(map[string]string)
 	for key, value := range settings["parameters"].(map[interface{}]interface{}) {
@@ -84,10 +84,11 @@ func NewServiceConfig(name string, settings map[string]interface{}, defaults Con
 		case int:
 			sc.Settings[key.(string)] = strconv.Itoa(value.(int))
 		default:
-			return sc, fmt.Errorf("Can't handle value of type %T", t)
+			return sc, fmt.Errorf("can't handle value of type %T", t)
 		}
 	}
 
+	sc.Timeout = defaults.DefaultTimeout
 	if val, ok := settings["timeout"]; ok {
 		switch t := val.(type) {
 		case string:
@@ -96,12 +97,9 @@ func NewServiceConfig(name string, settings map[string]interface{}, defaults Con
 		case int:
 			sc.Timeout = time.Duration(val.(int)) * time.Second
 		default:
-			return sc, fmt.Errorf("Unknown type for timeout %T", t)
+			return sc, fmt.Errorf("unknown type for timeout %T", t)
 		}
-
 	}
-
-	delete(sc.Settings, "type")
 	delete(sc.Settings, "timeout")
 
 	return sc, nil
