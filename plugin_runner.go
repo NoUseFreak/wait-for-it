@@ -3,12 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/NoUseFreak/wait-for-it/plugin"
 	"io"
 	"os/exec"
 	"strings"
 	"sync"
 	"time"
-	"github.com/NoUseFreak/wait-for-it/plugin"
 )
 
 type PluginRunner struct {
@@ -76,9 +76,17 @@ func (pr *PluginRunner) Run(config ServiceConfig, stdout chan string, stderr cha
 	argString := pr.createArguments(config)
 	cmd := exec.Command(pr.location+"/"+config.Type, argString)
 
-	stdoutPipe, _ := cmd.StdoutPipe()
+	stdoutPipe, err := cmd.StdoutPipe()
+	if err != nil {
+		stderr <- err.Error()
+		return false
+	}
 	pr.forwardOutput(config, stdoutPipe, stdout)
-	stderrPipe, _ := cmd.StderrPipe()
+	stderrPipe, err := cmd.StderrPipe()
+	if err != nil {
+		stderr <- err.Error()
+		return false
+	}
 	pr.forwardOutput(config, stderrPipe, stderr)
 
 	timer := pr.setTimeoutTimer(config, cmd, stderr)
@@ -88,7 +96,7 @@ func (pr *PluginRunner) Run(config ServiceConfig, stdout chan string, stderr cha
 		return false
 	}
 
-	err := cmd.Wait()
+	err = cmd.Wait()
 	pr.handleResult(err, config, stdout, stderr)
 	timer.Stop()
 

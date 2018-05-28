@@ -11,8 +11,8 @@ import (
 	"path"
 	"runtime"
 	"strings"
-	"time"
 	"sync"
+	"time"
 )
 
 type PluginLoader struct {
@@ -66,7 +66,11 @@ func (pl *PluginLoader) LoadPlugin(name string) error {
 	targetPath := pl.location + "/" + name
 	if _, err := os.Stat(targetPath); os.IsNotExist(err) {
 		cliUi.Output(fmt.Sprintf(" - Downloading plugin for %s...", name))
-		pluginUrl, _ := pl.findPluginUrl(name)
+		pluginUrl, err := pl.findPluginUrl(name)
+		if err != nil {
+			return err
+		}
+
 		return pl.downloadPlugin(pluginUrl, name)
 	} else {
 		cliUi.Output(fmt.Sprintf(" - Downloading plugin for %s... (cached)", name))
@@ -75,7 +79,10 @@ func (pl *PluginLoader) LoadPlugin(name string) error {
 }
 
 func (pl *PluginLoader) findPluginUrl(name string) (string, error) {
-	url, _ := pl.findLatestReleasePath()
+	url, err := pl.findLatestReleasePath()
+	if err != nil {
+		return "", err
+	}
 
 	return url + "/" + runtime.GOOS + "_" + name, nil
 }
@@ -87,7 +94,10 @@ func (pl *PluginLoader) findLatestReleasePath() (string, error) {
 
 	releaseUrl := "https://api.github.com/repos/NoUseFreak/wait-for-it/releases/latest"
 	client := http.Client{Timeout: time.Second * 2}
-	req, _ := http.NewRequest(http.MethodGet, releaseUrl, nil)
+	req, err := http.NewRequest(http.MethodGet, releaseUrl, nil)
+	if err != nil {
+		return "", err
+	}
 	res, getErr := client.Do(req)
 	if getErr != nil {
 		cliUi.Error(getErr.Error())
@@ -99,8 +109,14 @@ func (pl *PluginLoader) findLatestReleasePath() (string, error) {
 	dec.Decode(&data)
 	jq := jsonq.NewQuery(data)
 
-	value, _ := jq.String("assets", "0", "browser_download_url")
-	assetUrl, _ := url.Parse(value)
+	value, err := jq.String("assets", "0", "browser_download_url")
+	if err != nil {
+		return "", nil
+	}
+	assetUrl, err := url.Parse(value)
+	if err != nil {
+		return "", nil
+	}
 
 	pl.latestReleasePath = strings.Replace(value, assetUrl.Path, path.Dir(assetUrl.Path), 1)
 
