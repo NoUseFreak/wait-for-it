@@ -37,7 +37,8 @@ darwin: \
 	build/darwin_mysql \
 	build/darwin_redis \
 	build/darwin_cassandra \
-	build/darwin_kafka
+	build/darwin_kafka \
+	build/darwin_mongodb
 
 .PHONY: linux
 darwin: \
@@ -45,7 +46,8 @@ darwin: \
 	build/linux_mysql \
 	build/linux_redis \
 	build/linux_cassandra \
-	build/linux_kafka
+	build/linux_kafka \
+	build/linux_mongodb
 
 build/darwin_wait-for-it:
 	$(call build,.,darwin,amd64,wait-for-it)
@@ -72,3 +74,8 @@ build/darwin_kafka:
 	$(call build_plugin,darwin,amd64,kafka)
 build/linux_kafka:
 	$(call build_plugin,linux,amd64,kafka)
+
+build/darwin_mongodb:
+	$(call build_plugin,darwin,amd64,mongodb)
+build/linux_mongodb:
+	$(call build_plugin,linux,amd64,mongodb)

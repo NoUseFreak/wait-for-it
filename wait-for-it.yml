@@ -33,3 +33,10 @@ services:
     plugin: kafka
     parameters:
       brokers: 127.0.0.1:9092
+  mongo:
+    plugin: mongodb
+    parameters:
+      username: root
+      password: root
+      host: localhost
+      port: 27017
