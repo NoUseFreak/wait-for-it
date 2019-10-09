@@ -1,14 +1,14 @@
 language: go
 go:
-  - master
+- stable
 deploy:
-  provider: releases
-  api_key:
-    secure: kN7Rjau+B7ydTo3L87Fg+2WSWIWVt0OEsllnmVwBBcD7g9mImkTXl5hmlHIaLe++MZ0f1Lj1x/m1Hr184E+fImvFtKGBZKR4FVEPVsJOX03BRTllXWnMQGEFLhmFJPa3sfxJ/x6qx1jwu0ib5B6jesgrguDMWOKN9X/jFYpLcQMM0JRmCf3/bf78DeMFabrZWCdRyByOCUj+0WU7cidUttVgNgjvaPa3kC6ZfmlC027PS3kAKuCYnIljAsMoKHkIgd4A8fnsTkeOjMJZxeIDaJxLCrhRDR1jxm9O6gicI7V3oVVhziudWPuchZlbx6/ENiAJRoZkMwZuAo6UIjSB39HC6V0nwRDnjANJzhGKXihQfpJk0acNqtCvUthZmwGTkHejSGOohIt2k9vgIhHqhENN+d7HzIz9L3yWrNBjzlee7Hq3t0czUcjG53b8v1VZeyJHxyOr8MHM648IK2QlfCErDwYrLXnhnFerYvrIV2dQtYjPtEMfM+UfNZaSgJ7/WIQ9YKqP8L/yHJVG/ThtFyuwE+CwElOGqHFbkuGMeVJKILJOGSjxCs66GsXUsV8VsrxTzHZDKBvD1nSyxz/Pm0JXKtF9qpk4nEP+maIayoSYsn3VNGb+2AKSptLnvm0m+VZXszjMkVRbYoft+x101gfJG1upPuw4uwVg8rg/qag=
-  file_glob: true
-  file: build/*
+- provider: script
   skip_cleanup: true
+  script: bash scripts/release.sh
   on:
     repo: NoUseFreak/wait-for-it
-    tags: true
     branch: master
+    tags: true
+env:
+  global:
+    secure: bxZ1Wbijg7oIv6uE3/lE7XTqxmU+jGDDFwuPjsVoJjbP+gN4Dkn5yFZnPhAdeER0r/Dd4nHFSxHd1IcOL4WMNhDg/dJT9EoFtyuAZLMd1rxWAuUL+Cojn/MrGHBkg+Xs7dkhL7FS7ZQz09SmpMZEWyNSStPzMu1TNj4co0+Wk2QEFfGIYWpe408+psHu61XUbcwnieYi1HTpT/VNqi82Uik2QIc937EQRR3n3ciy8NFxCmJFzR0UTXf5rzbqUACX7HmTvHlpsu1C6M4zZo8LXHhdzyNT9ml3m46ULCAH37OiPx8TfZG/kXqlpfPzJv150l3/SRaS7MtrK5hB892RvidevIIHpGOt5twjMvIei7aTVsNx1E+2GKvla12t//fxabjrijXH9MGfQ/vDgkk4ZXdq0ENpP4z8/ARQWUmkG/WQVIka/aTcg4cYHDIrQp5FEzBN365UfH7q2E9Chh7s49vaJ9OuSgW5J7PUiNwcClNeV02ovUNm7acKQ+H/XJGCNE2dlValvoIDQWZHoef+Wc/EZKDJfPNjdNCe4Drg/BcGUIm6/FCEA+L5Wblow0eV3XAem7FsNmU6k9z6k2KUGAwOXR93d112J8seXj1O1UxpOu3gUR9O6B/7ILcNGeEpcNKh4Ndw7AQXV4JhuhY8b6JV3gVogO5szDqa6+y5tis=

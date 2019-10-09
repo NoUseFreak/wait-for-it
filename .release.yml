@@ -1,0 +1,18 @@
+letitgo:
+  name: wait-for-it
+  description: Wait for a service to become available.
+
+changelog:
+  - file: CHANGELOG.md
+
+githubrelease:
+  - assets:
+      - ./build/pkg/*
+
+homebrew:
+  - homepage: https://github.com/NoUseFreak/wait-for-it
+    url: https://github.com/NoUseFreak/wait-for-it/releases/download/{{ .Version }}/darwin_amd64.zip
+    version: "{{ .Version }}"
+    tap:
+      url: git@github.com:NoUseFreak/homebrew-brew.git
+    test: system "#{bin}/{{ .Name }} -h"
