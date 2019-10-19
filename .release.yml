@@ -1,18 +1,18 @@
 letitgo:
   name: wait-for-it
   description: Wait for a service to become available.
+  actions:
+    - type: changelog
+      file: CHANGELOG.md
 
-changelog:
-  - file: CHANGELOG.md
+    - type: githubrelease
+      assets:
+        - ./build/pkg/*
 
-githubrelease:
-  - assets:
-      - ./build/pkg/*
-
-homebrew:
-  - homepage: https://github.com/NoUseFreak/wait-for-it
-    url: https://github.com/NoUseFreak/wait-for-it/releases/download/{{ .Version }}/darwin_amd64.zip
-    version: "{{ .Version }}"
-    tap:
-      url: git@github.com:NoUseFreak/homebrew-brew.git
-    test: system "#{bin}/{{ .Name }} -h"
+    - type: homebrew
+      homepage: https://github.com/NoUseFreak/wait-for-it
+      url: https://github.com/NoUseFreak/wait-for-it/releases/download/{{ .Version }}/darwin_amd64.zip
+      version: "{{ .Version }}"
+      tap:
+        url: git@github.com:NoUseFreak/homebrew-brew.git
+      test: system "#{bin}/{{ .Name }} -h"
